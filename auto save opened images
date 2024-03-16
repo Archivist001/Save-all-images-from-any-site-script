@@ -20,26 +20,29 @@ function downloadImage(url, filename, folderName, index) {
         })
         .catch(error => {
             console.error(`Error downloading image ${index}:`, error);
-            // Capture image if direct download fails (for example, due to CORS policy)
-            captureImage(filename, folderName);
+            captureImage(url, filename, folderName, index);
         });
 }
 
-// Function to capture image using snipping tool (replace this with your capture logic)
-function captureImage(filename, folderName) {
-    console.log(`Could not download image ${filename}. Capturing image instead.`);
+// Function to capture image using a custom logic or tool
+function captureImage(url, filename, folderName, index) {
+    console.log(`Direct download failed for image ${index}. Capturing image instead.`);
     // Add your code here to capture the image (e.g., using a browser extension or a custom capture tool)
+    // For demonstration purposes, we'll just log the capture attempt
+    console.log(`Attempted to capture image ${index}: ${url}`);
 }
 
 // Function to save images opened or fetched on the webpage
 function saveOpenedImages(folderName) {
+    const savedImages = new Set();
+
     document.addEventListener('load', event => {
         const target = event.target;
-        if (target.tagName.toLowerCase() === 'img' && !target.dataset.saved) {
+        if (target.tagName.toLowerCase() === 'img' && !savedImages.has(target.src) && !target.src.endsWith('.webp')) {
             const imageUrl = target.src;
             const filename = getImageFilename(imageUrl);
-            downloadImage(imageUrl, filename, folderName);
-            target.dataset.saved = true;
+            downloadImage(imageUrl, filename, folderName, savedImages.size + 1);
+            savedImages.add(imageUrl);
         }
     }, true);
 }
