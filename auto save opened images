@@ -1,0 +1,57 @@
+// Function to download image
+function downloadImage(url, filename, folderName, index) {
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const objectURL = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = objectURL;
+            a.setAttribute('download', `${folderName}/${filename}`);
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(objectURL);
+            console.log(`Image ${index} downloaded: ${filename}`);
+        })
+        .catch(error => {
+            console.error(`Error downloading image ${index}:`, error);
+            // Capture image if direct download fails (for example, due to CORS policy)
+            captureImage(filename, folderName);
+        });
+}
+
+// Function to capture image using snipping tool (replace this with your capture logic)
+function captureImage(filename, folderName) {
+    console.log(`Could not download image ${filename}. Capturing image instead.`);
+    // Add your code here to capture the image (e.g., using a browser extension or a custom capture tool)
+}
+
+// Function to save images opened or fetched on the webpage
+function saveOpenedImages(folderName) {
+    document.addEventListener('load', event => {
+        const target = event.target;
+        if (target.tagName.toLowerCase() === 'img' && !target.dataset.saved) {
+            const imageUrl = target.src;
+            const filename = getImageFilename(imageUrl);
+            downloadImage(imageUrl, filename, folderName);
+            target.dataset.saved = true;
+        }
+    }, true);
+}
+
+// Function to get the image filename from its URL
+function getImageFilename(url) {
+    const splitUrl = url.split('/');
+    return splitUrl[splitUrl.length - 1]; // Extract filename from URL
+}
+
+// Specify folder name for saving images
+const folderName = 'IMG';
+
+// Call the function to save opened images
+saveOpenedImages(folderName);
