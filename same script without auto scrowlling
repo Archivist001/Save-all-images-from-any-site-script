@@ -57,7 +57,7 @@ function getImageFilename(url) {
 }
 
 // Specify folder name for saving images
-const folderName = 'C:\Users\DELL\Downloads\IMG';
+const folderName = 'IMG';
 
 // Call the function to save all images
 saveAllImages(folderName);
